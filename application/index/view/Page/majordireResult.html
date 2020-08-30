@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>填报成功</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__INDEX__/lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="__INDEX__/css/public.css" media="all">
+</head>
+<style>
+    .panel {margin-bottom:17px;background-color:#fff;border:1px solid transparent;border-radius:3px;-webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);box-shadow:0 1px 1px rgba(0,0,0,.05)}
+    .panel-body {padding:15px}
+    .panel-title {margin-top:0;margin-bottom:0;font-size:14px;color:inherit}
+    .label {display:inline;padding:.2em .6em .3em;font-size:75%;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25em;margin-top: .3em;}
+    .main_btn > p {height:40px;}
+    .center-in-center { /*处理居中问题*/
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				-webkit-transform: translate(-50%, -50%);
+				-moz-transform: translate(-50%, -50%);
+				-ms-transform: translate(-50%, -50%);
+				-o-transform: translate(-50%, -50%);
+				transform: translate(-50%, -50%);
+    }
+</style>
+<body>
+<div class="layuimini-container">
+            <div class="layui-col-md4 center-in-center">
+                <div class="col-xs-6 col-md-4">
+                    <div class="panel layui-bg-Gray">
+                        <div class="panel-body">
+                            <div style="text-align: center;margin-top: 10px;">
+                                <i class="layui-icon layui-circle"
+                                   style="color: white;font-size:30px;font-weight:bold;background: #52C41A;padding: 20px;line-height: 80px;">&#xe605;</i>
+                                <div style="font-size: 24px;color: #333;font-weight: 500;margin-top: 30px;">
+                                    专业方向选择已提交
+                                </div>
+                                <!-- <div style="font-size: 14px;color: #666;margin-top: 20px;"></div> -->
+                            </div>
+
+                            <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">学生学号:</label>
+                                    <div class="layui-input-block">
+                                        <div class="layui-form-mid layui-word-aux">
+                                            <span style="font-size: 18px;color: #DAA520;">{$Request.session.students.student}</span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">学生姓名:</label>
+                                    <div class="layui-input-block">
+                                        <div class="layui-form-mid layui-word-aux">
+                                            <span style="text-align: center; font-size: 18px;color: #DAA520;">{$Request.session.students.stuname}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">所在班级:</label>
+                                    <div class="layui-input-block">
+                                        <div class="layui-form-mid layui-word-aux">
+                                            <span style="font-size: 18px;color: #DAA520;">{$Request.session.students.stuclass}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">专业方向:</label>
+                                    <div class="layui-input-block">
+                                        <div class="layui-form-mid layui-word-aux">
+                                            <span style="font-size: 15px ; color: #B8860B;">{$fillinChecked}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    
+</div>
+</body>
+</html>

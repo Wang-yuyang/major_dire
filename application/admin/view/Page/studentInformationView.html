@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>用户管理</title>
+    <link rel="stylesheet" href="__INDEX__/assets/libs/layui/css/layui.css" />
+    <link rel="stylesheet" href="__INDEX__/assets/module/admin.css?v=317" />
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <!-- 页面加载loading -->
+    <div class="page-loading">
+        <div class="ball-loader">
+            <span></span><span></span><span></span><span></span>
+        </div>
+    </div>
+    <!-- 正文开始 -->
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <!-- 数据表格 -->
+                <table id="userTable" lay-filter="userTable"></table>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 表格操作列 -->
+    <script type="text/html" id="userTbBar">
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="reset">重置状态</a>
+    </script>
+    <!-- 表单弹窗 -->
+    <script type="text/html" id="userEditDialog">
+        <form id="userEditForm" lay-filter="userEditForm" class="layui-form model-form">
+            <input name="userId" type="hidden" />
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">学号:</label>
+                <div class="layui-input-block">
+                    <input name="student" placeholder="请输入学号:" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">姓名:</label>
+                <div class="layui-input-block">
+                    <input name="stuname" placeholder="请输入姓名" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">性别:</label>
+                <div class="layui-input-block">
+                    <input type="radio" value="男" name="gender" title="男" checked>
+                    <input type="radio" value="女" name="gender" title="女">
+
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">班级:</label>
+                <div class="layui-input-block">
+                    <input name="stuclass" placeholder="请输入班级:" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">专业:</label>
+                <div class="layui-input-block">
+                    <input type="radio" value="1" name="majorname" title="通信" checked>
+                    <input type="radio" value="2" name="majorname" title="计算机">
+
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">学生类别:</label>
+                <div class="layui-input-block">
+                    <div id="category"></div>
+                </div>
+            </div>
+
+            <div class="layui-form-item text-right">
+                <button class="layui-btn" lay-filter="userEditSubmit" id="userEditSubmit" type="submit" lay-submit>提交</button>
+                <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+            </div>
+        </form>
+    </script>
+
+    <!-- js部分 -->
+    <script type="text/javascript" src="__INDEX__/assets/libs/layui/layui.js"></script>
+    <script type="text/javascript" src="__INDEX__/assets/js/common.js?v=317"></script>
+    <script>
+        layui.use(['layer', 'form', 'table', 'upload', 'util', 'admin', 'xmSelect'], function() {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var upload = layui.upload;
+
+            /* 渲染表格 */
+            var insTb = table.render({
+                elem: '#userTable',
+                url: '{:url("/admin/page/studentAll")}',
+                page: true,
+                limit: 10,
+                limits: [10, 20, 30, 40, 50, 60, 100],
+                groups: 5,
+                toolbar: ['<p>',
+                    ' <button type="button" class="layui-btn" id="import"><i class="layui-icon">&#xe67c;</i>请上传excel文件</button>',
+                    '<button type="button" class="layui-btn" id="export"><i class="layui-icon">&#xe601;</i>下载学生专业方向选择统计表</button>',
+                    '<button  lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加学生</button>&nbsp;',
+                    '</p>'
+                ].join(''),
+                cols: [
+                    [{
+                        type: 'numbers'
+                    }, {
+                        field: 'student',
+                        title: '学号',
+                        sort: true,
+                        width: 130,
+                        align: 'center'
+                    }, {
+                        field: 'stuclass',
+                        title: '班级',
+                        width: 80,
+                        sort: true,
+                        align: 'center'
+                    }, {
+                        field: 'gender',
+                        title: '性别',
+                        width: 80,
+                        sort: true,
+                        align: 'center'
+                    }, {
+                        field: 'stuname',
+                        title: '姓名',
+                        width: 90,
+                        sort: true,
+                        align: 'center'
+                    }, {
+                        field: 'aftersix',
+                        title: '密码',
+                        sort: true,
+                        width: 100,
+                        align: 'center'
+                    }, {
+                        field: 'major',
+                        title: '专业群',
+                        templet: function(res) {
+                            if (res.major == 1) return "通信与网络技术专业群";
+                            else if (res.major == 2)
+                                return "软件与大数据技术专业群";
+                            else return "无法识别专业群";
+                        },
+                        sort: true,
+                        width: 200,
+                        align: 'center'
+                    }, {
+                        field: 'state',
+                        title: '是否选择方向',
+                        templet: function(res) {
+                            if (res.state == 0) return "未填报";
+                            else return "已填报";
+                        },
+                        sort: true,
+                        align: 'center'
+                    }, {
+                        title: '方向名称',
+                        field: 'majorname',
+                        sort: true,
+                        align: 'center'
+                    }, {
+                        title: '操作',
+                        toolbar: '#userTbBar',
+                        align: 'center',
+                        minWidth: 200,
+                        align: 'center'
+                    }]
+                ]
+            });
+
+            /* 表格工具条点击事件 */
+            table.on('tool(userTable)', function(obj) {
+                if (obj.event === 'del') { // 删除
+                    doDel(obj);
+                } else if (obj.event === 'reset') { // 重置密码
+                    resetPsw(obj);
+                }
+            });
+            /* 表格头工具栏点击事件 */
+            table.on('toolbar(userTable)', function(obj) {
+                if (obj.event === 'add') { // 添加
+                    showEditModel();
+                }
+            });
+
+
+            /* 显示表单弹窗 */
+            function showEditModel(mData) {
+                admin.open({
+                    type: 1,
+                    area: '600px',
+                    title: (mData ? '修改' : '添加') + '学生',
+                    content: $('#userEditDialog').html(),
+                    success: function(layero, dIndex) {
+                        //渲染下拉框
+                        var insRoleSel = xmSelect.render({
+                            el: '#category',
+                            name: 'category',
+                            layVerify: 'required',
+                            layVerType: 'tips',
+                            radio: true,
+                            data: [{
+                                name: '普通统招',
+                                value: '普通统招'
+                            }, {
+                                name: '普高注册',
+                                value: '普高注册'
+                            }, {
+                                name: '对口单招',
+                                value: '对口单招'
+                            }, {
+                                name: '提前招生',
+                                value: '提前招生'
+                            }, {
+                                name: '培训生',
+                                value: '培训生'
+                            }, {
+                                name: '中职注册',
+                                value: '中职注册'
+                            }]
+                        });
+
+                        form.render('radio');
+
+                        // 回显表单数据
+                        form.val('userEditDialog', mData);
+                        // 表单提交事件
+                        form.on('submit(userEditSubmit)', function(data) {
+                            var loadIndex = layer.load(2);
+                            $.get(mData ? '/admin/Page/addStudent' : '/admin/Page/addStudent', data.field, function(res) {
+                                layer.close(loadIndex);
+                                if (res.status == 1) {
+                                    layer.close(dIndex);
+                                    layer.msg("学生添加成功!");
+                                    insTb.reload({
+                                        page: {
+                                            curr: 1
+                                        }
+                                    });
+
+                                } else if (res.status == 0) {
+                                    layer.msg("这个学生存在了,请查看学号是否正确!");
+                                } else {
+                                    layer.msg("学生添加出错!");
+                                    layer.close(dIndex);
+                                }
+                            }, 'json');
+                            return false;
+                        });
+
+                        // 弹窗不出现滚动条
+                        $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                    }
+                });
+            }
+
+            //  实现下载 export
+            $("#export").click(function() {
+                var $form = $('<form method="GET"></form>');
+                $form.attr('action', '/admin/Exportimport/studentExportExcel');
+                $form.appendTo($('body'));
+                $form.submit();
+            })
+
+            //执行实例
+            upload.render({
+                elem: '#import', //绑定元素
+                accept: 'file', //允许上传的文件类型
+                method: 'post',
+                url: '/admin/Exportimport/studentImportExcel', //上传接口
+
+                accept: 'file',
+                // exts: 'xls',
+                success: function(res) {
+                    if (res.code == 0) {
+                        layer.msg(res.message, {
+                            icon: 6,
+                            time: 2000
+                        });
+                    }
+                    //上传完毕回调
+                },
+                error: function() {
+                    //请求异常回调
+                    layer.msg("文件上传失败", {
+                        icon: 5,
+                        time: 2000
+                    });
+                }
+            });
+
+
+
+            /* 删除  已实现 */
+            function doDel(obj) {
+                var sid = obj.data.student;
+                layer.confirm("要删除" + obj.data.stuname + "吗?", function() {
+                    $.ajax({
+                        type: 'POST',
+                        // 需要PHP处理文件的入口路径
+                        url: "/admin/page/deleteStudent", //发送请求
+                        data: {
+                            student: sid
+                        },
+                        success: function(res) {
+                            if (res.status == '1') {
+                                layer.msg("学生信息已删除!");
+                                insTb.reload({
+                                    page: {
+                                        curr: 1
+                                    }
+                                });
+                            } else {
+                                layer.msg("删除失败!");
+                            }
+
+                        }
+                    });
+                })
+            }
+
+            /* 重置状态  已实现*/
+            function resetPsw(obj) {
+                var sid = obj.data.student;
+                if (obj.data.state == '') layer.msg(obj.data.stuname + "同学还没有填报!");
+                else layer.confirm("要重置" + obj.data.stuname + "方向状态吗?", function() {
+                    $.ajax({
+                        type: 'POST',
+                        // 需要PHP处理文件的入口路径
+                        url: "/admin/page/strdentStateReset", //发送请求
+                        data: {
+                            student: sid
+                        },
+                        success: function(res) {
+                            if (res.status == 1) {
+                                layer.msg("学生信息已重置!");
+                                insTb.reload({
+                                    page: {
+                                        curr: 1
+                                    }
+                                });
+                            }
+                        }
+                    });
+                })
+            }
+        });
+    </script>
+</body>
+
+</html>

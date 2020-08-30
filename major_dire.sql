@@ -1,0 +1,14 @@
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '1', 'H3C特色班', '', '45');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '1', '网络系统集成与信息安全', '', '90');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '1', '信息工程项目管理', '', '45');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '1', '移动网络优化', '', '45');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '1', '云计算运维', '', '45');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '1', '数据通信技术【企业合作班】', '', '20');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '1', '5G移动通信技术【企业合作班】', '', '20');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '2', 'Web前端开发', '', '180');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '2', 'Java应用开发', '', '135');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '2', '大数据技术【企业合作班】', '', '45');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '2', '信息系统集成与运维', '', '180');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '2', '移动互联应用开发', '', '135');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '2', '数据通信技术【企业合作班】', '', '25');
+INSERT INTO `major_choose`.`majordire` ( `pid`, `majorname`, `majorintroduce`, `majornumber`) VALUES ( '2', '5G移动通信技术【企业合作班】', '', '25');

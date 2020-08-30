@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="__INDEX__/lib/layui-v2.5.5/css/layui.css" media="all">
+</head>
+
+<body>
+    <button type="button" class="layui-btn" id="test1">
+        <i class="layui-icon">&#xe67c;</i>数据导入测试按钮
+    </button>
+    <script src="__INDEX__/lib/layui-v2.5.5/layui.js"></script>
+    <script>
+    layui.use('upload', function() {
+    	var $=layui.jquery;
+        var upload = layui.upload;
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#test1',
+            accept: 'file', //允许上传的文件类型
+            method: 'post',
+
+            url: '{:url("admin/Exportimport/**")}',
+            done: function(res) {
+                if (res.code == 0) {
+                    layer.msg(res.msg, {
+                        icon: 6,
+                        time: 2000
+                    });
+                    // $("#test1").attr("disabled", "true");
+                     $("#test1").addCss("layui-btn layui-btn-disabled");
+                }
+                //上传完毕回调
+            },
+
+            error: function() {
+                //请求异常回调
+            }
+
+        });
+    });
+    </script>
+</body>
+
+</html>

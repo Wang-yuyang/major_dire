@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__INDEX__/lib/layui-v2.5.5/layui.js" />
+    <link rel="stylesheet" href="__GJSCSS__/module/admin.css?v=318" />
+
+</head>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+
+            <!-- 数据表格 -->
+            <table id="authoritiesTable" lay-filter="authoritiesTable"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="currentTableBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<!-- 表单弹窗 -->
+<script type="text/html" id="authoritiesEditDialog">
+    <form id="authoritiesEditForm" method="post" lay-filter="authoritiesEditForm" class="layui-form model-form" style="padding-right:20px;">
+        <input name="id" type="hidden" />
+        <div class="layui-card-body">
+            <div class="layui-form-item layui-row">
+                <div class=" layui-inline layui-col-xs5">
+                    <div class="grid-demo grid-demo-bg1">
+                        <label class="layui-form-label">文章类别</label>
+                        <div class="layui-input-block">
+                            <div id="authoritiesEditParentSel" class="ew-xmselect-tree"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <div class=" layui-form-item layui-row">
+                <div class="layui-inline layui-col-xs5">
+                    <div class="grid-demo grid-demo-bg1">
+                        <label class="layui-form-label layui-form-required">文章标题</label>
+                        <div class="layui-input-block">
+                            <input name="title" placeholder="请输入文章标题" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class=" layui-form-item layui-row">
+                <label class="layui-form-label">文章正文</label>
+                <div class="layui-input-block">
+                    <textarea id="demoEditor" name="content"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="layui-form-item text-right">
+            <button class="layui-btn" lay-filter="authoritiesEditSubmit" lay-submit>保存</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+
+<!-- js部分 -->
+<script type="text/javascript" src="__GJSCSS__/libs/layui/layui.js"></script>
+<script type="text/javascript" src="__GJSCSS__/js/common.js"></script>
+
+<script type="text/javascript" src="__GJSCSS__/libs/tinymce/tinymce.min.js"></script>
+
+<script>
+    layui.use(['layer', 'form', 'table', 'admin', 'treeTable', 'util', 'xmSelect'], function() {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var admin = layui.admin;
+        var treeTable = layui.treeTable;
+        var util = layui.util;
+        var xmSelect = layui.xmSelect;
+        var tbDataList = [];
+        var table = layui.table;
+        var cates;
+        $.get('{:url("admin/cate/selectAll")}', function(res) {
+            //console.log(res.data);
+            cates = {};
+            for (i in res.data) {
+                cates[res.data[i].id] = res.data[i].name;
+            }
+            var arr = res.data.filter(e => e.pid > 0)
+
+            for (i = 0; i < arr.length; i++) {
+                cates[arr[i].id] = cates[arr[i].pid] + "/" + cates[arr[i].id]
+            }
+            //console.log(cates);
+        });
+        // 渲染表格
+        var insTb = table.render({
+            elem: '#authoritiesTable',
+            url: '{:url("admin/information/selectAll")}',
+            toolbar: ['<p>',
+                '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+
+                '</p>'
+            ].join(''),
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            page: true,
+            method: "get",
+            where: {
+                key: 'get'
+            }, //如果无需传递额外参数，可不加该参数  ，我是用来判断是否是layui 请求参数的标志
+
+            parseData: function(res) {
+                console.log(res);
+                for (i in res.data) {
+                    res.data[i].cateName = cates[res.data[i].category2];
+                }
+
+                return {
+                    "code": 0,
+                    "msg": "",
+                    "count": res.count,
+                    "data": res.data
+                };
+            },
+
+            cols: [
+                [{
+                    type: 'checkbox'
+                }, {
+                    field: 'id',
+                    width: 60,
+                    title: '序列',
+                    type: 'numbers',
+
+                }, {
+                    field: 'cateName',
+                    width: 100,
+                    title: '类别'
+                }, {
+                    field: 'Country',
+                    width: 70,
+                    title: '国家'
+                }, {
+                    field: 'Languages',
+                    width: 70,
+                    title: '语种'
+                }, {
+                    field: 'title',
+                    width: 210,
+                    title: '标题'
+
+                }, {
+                    field: 'content',
+                    width: 260,
+                    title: '正文'
+                }, {
+                    field: 'created_by_user',
+                    width: 110,
+                    title: '发布人'
+
+                }, {
+                    field: 'created_by_time',
+                    width: 135,
+                    title: '创建时间',
+                    sort: true
+                }, {
+                    title: '操作',
+                    width: 140,
+                    templet: '#currentTableBar',
+                    fixed: "right",
+                    align: "center"
+                }]
+            ],
+            done: function(data) {
+                tbDataList = data;
+                //					console.log(data);
+            }
+        });
+        /* 表格工具条点击事件 */
+        table.on('tool(authoritiesTable)', function(obj) {
+
+            if (obj.event === 'edit') { // 修改
+
+                showEditModel(obj.data);
+            } else if (obj.event === 'del') { // 删除
+
+                doDel(obj);
+                obj.del();
+
+            }
+        });
+
+
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(authoritiesTable)', function(obj) {
+            if (obj.event === 'add') { // 添加
+                showEditModel();
+            } else if (obj.event === 'del') { // 删除
+                var checkRows = insTb.checkStatus();
+                if (checkRows.length === 0) {
+                    layer.msg('请选择要删除的数据', {
+                        icon: 2
+                    });
+                    return;
+                }
+                var ids = checkRows.map(function(d) {
+                    return d.id;
+                });
+                doDel({
+                    ids: ids
+                });
+            }
+        });
+
+        /* 删除 */
+        function doDel(obj) {
+            layer.confirm('确定要删除此数据吗？', {
+                skin: 'layui-layer-admin',
+                shade: .1
+            }, function(i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                $.get('{:url("del")}', {
+                    id: obj.data.id,
+                }, function(res) {
+                    layer.close(loadIndex);
+                    if (200 === res.code) {
+                        layer.msg(res.msg, {
+                            icon: 1
+                        });
+                        //执行搜索重载
+                        table.reload('authoritiesTable', {
+                            page: {
+                                curr: 1
+                            }
+                        }, 'data');
+                    } else {
+                        layer.msg(res.msg, {
+                            icon: 2
+                        });
+                    }
+                }, 'json');
+
+            });
+            //执行搜索重载
+            table.reload('authoritiesTable', {
+                page: {
+                    curr: 1
+                }
+            }, 'data');
+        }
+
+        /* 显示表单弹窗 */
+        function showEditModel(mData) {
+            admin.open({
+                type: 1,
+                moveOut: true,
+                area: ['1050px', '700px'],
+                title: (mData ? '修改' : '添加') + '新闻',
+                content: $('#authoritiesEditDialog').html(),
+
+                success: function(layero, dIndex) {
+                    console.log(mData);
+
+                    // 渲染富文本编辑器
+                    tinymce.init({
+                        selector: '#demoEditor',
+                        height: 400,
+                        branding: false,
+                        language: 'zh_CN',
+                        plugins: 'code print preview fullscreen paste searchreplace save autosave link autolink image imagetools media table codesample lists advlist hr charmap emoticons anchor directionality pagebreak quickbars nonbreaking visualblocks visualchars wordcount',
+                        toolbar: 'fullscreen preview code | undo redo | forecolor backcolor | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | formatselect fontselect fontsizeselect | link image media emoticons charmap anchor pagebreak codesample | ltr rtl',
+                        toolbar_drawer: 'sliding',
+                        images_upload_url: '{:url("admin/information/upload_img")}',
+                        file_picker_types: 'file image media',
+                        file_picker_callback: function(callback, value, meta) {
+                            input.onchange = function() {
+                                var file = this.files[0];
+                                var xhr, formData;
+                                console.log(file.name);
+                                xhr = new XMLHttpRequest();
+                                xhr.withCredentials = false;
+                                xhr.open('POST', upurl);
+                                xhr.onload = function() {
+                                    var json;
+                                    console.log(xhr);
+                                    if (xhr.status != 200) {
+                                        failure('HTTP Error: ' + xhr.status);
+                                        return;
+                                    }
+                                    console.log(xhr.responseText);
+                                    json = JSON.parse(xhr.responseText);
+                                    if (!json || typeof json.location != 'string') {
+                                        failure('Invalid JSON: ' + xhr.responseText);
+                                        return;
+                                    }
+                                    console.log(callback);
+                                    callback(json.location);
+                                };
+                                formData = new FormData();
+                                formData.append('file', file, file.name);
+                                xhr.send(formData);
+                            };
+                        }
+                    });
+                    if (mData)
+                        tinymce.get('demoEditor').setContent(mData.content);
+                    // 回显表单数据
+                    form.val('authoritiesEditForm', mData);
+
+                    // 表单提交事件
+                    form.on('submit(authoritiesEditSubmit)', function(data) {
+                        var content = tinymce.get('demoEditor').getContent();
+                        data.field.content = content;
+                        var loadIndex = layer.load(2);
+
+                        $.post(mData ? '{:url("admin/information/update")}' : '{:url("admin/information/submit")}', data.field, function(res) {
+
+                            layer.close(loadIndex);
+                            if (res.code === 200) {
+                                layer.close(dIndex);
+                                layer.msg(res.msg, {
+                                    icon: 6
+                                });
+                                insTb.refresh();
+
+                            } else {
+                                layer.msg(res.msg, {
+                                    icon: 2
+                                });
+                            }
+                        }, 'json');
+                        layer.close(dIndex);
+                        //执行搜索重载
+                        table.reload('authoritiesTable', {
+                            page: {
+                                curr: 1
+                            }
+                        }, 'mData');
+                        return false;
+                    });
+
+                    // 弹窗不出现滚动条
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                },
+                end: function() {
+                    // 销毁编辑器
+                    tinymce.get('demoEditor').destroy(false);
+                }
+
+            });
+        }
+    });
+</script>
+</body>
+
+</html>

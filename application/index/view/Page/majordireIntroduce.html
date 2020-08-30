@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>计通专业选择</title>
+    <link rel="stylesheet" type="text/css" href="__INDEX__/lib/layui-v2.5.5/css/layui.css" />
+    <script src="__INDEX__/lib/layui-v2.5.5/layui.all.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuwenben@1.0.1/fuwenben.js"></script>
+    <style>
+        .bs:hover {
+            background-color: #20b2aa;
+            font-size: 15px;
+        }
+        
+        .layui-this {
+            background-color: #c1e6f0;
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            {volist name="$majordire" id="dire" offset = '0'}
+            <li class="bs">{$dire.majorname}</li>
+            {/volist}
+        </ul>
+        <div class="layui-tab-content">
+            {volist name="$majordire" id="introd"}
+            <div class="layui-tab-item">{$introd.majorintroduce}</div>
+            {/volist}
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    // 监控页面，给第一个选项卡安排上被选中的效果
+    var element = layui.element;
+    var layer = layui.layer;
+    var $ = layui.jquery;
+    $('ul li').eq(0).click();
+    $('ul li').eq(0).addClass("layui-this");
+</script>
+
+</html>

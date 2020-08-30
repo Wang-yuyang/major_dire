@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>用户管理</title>
+    <link rel="stylesheet" href="__INDEX__/assets/libs/layui/css/layui.css" />
+    <link rel="stylesheet" href="__INDEX__/assets/module/admin.css" />
+
+
+
+    <script src="__INDEX__/assets/module/xmSelect.js"></script>
+</head>
+
+<body>
+    <!-- 页面加载loading -->
+    <div class="page-loading">
+        <div class="ball-loader">
+            <span></span><span></span><span></span><span></span>
+        </div>
+    </div>
+    <!-- 正文开始 -->
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <!-- 数据表格 -->
+                <table id="userTable" lay-filter="userTable"></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 表格操作列 -->
+    <script type="text/html" id="userTbBar">
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+
+    <!-- 表单弹窗 -->
+    <script type="text/html" id="userEditDialog">
+        <form id="userEditForm" lay-filter="userEditForm" class="layui-form model-form">
+            <input name="id" type="hidden" />
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">方向名称:</label>
+                <div class="layui-input-block">
+                    <input name="majorname" placeholder="请输入方向名称" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">方向人数:</label>
+                <div class="layui-input-block">
+                    <input name="majornumber" placeholder="请输入方向人数" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-form-required">专业:</label>
+                <div class="layui-input-block">
+                    <input type="radio" value="1" name="pid" title="通信" checked>
+                    <input type="radio" value="2" name="pid" title="计算机">
+
+                </div>
+            </div>
+
+            <!-- 富文本 -->
+            <div class=" layui-form-item layui-row">
+                <label class="layui-form-label">专业介绍</label>
+                <div class="layui-input-block">
+                    <textarea id="majorintroduce" name="majorintroduce"></textarea>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item text-right">
+                <button class="layui-btn" lay-filter="userEditSubmit" lay-submit>保存</button>
+                <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+            </div>
+        </form>
+    </script>
+
+    <!-- js部分 -->
+    <script type="text/javascript" src="__INDEX__/lib/layui-v2.5.5/layui.js"></script>
+    <script src="__INDEX__/assets/js/common.js"></script>
+    <script type="text/javascript" src="__INDEX__/assets/libs/tinymce/tinymce.min.js"></script>
+    <script>
+        layui.use(['layer', 'form', 'table', 'upload', 'util', 'admin', 'xmSelect'], function() {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var upload = layui.upload;
+
+            /* 渲染表格 */
+            var insTb = table.render({
+                elem: '#userTable',
+                url: '{:url("/admin/Page/majorAll")}',
+                limit: 50,
+                toolbar: ['<p>',
+                    '<button type="button" class="layui-btn" id="import"><i class="layui-icon">&#xe67c;</i>请上传excel文件</button>',
+                    '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加方向</button>&nbsp;',
+                    '</p>'
+                ].join(''),
+                cellMinWidth: 100,
+                cols: [
+                    [{
+                        type: 'numbers'
+                    }, {
+                        field: 'pid',
+                        title: '专业群',
+                        sort: true,
+                        templet: function(res) {
+                            if (res.pid == 1) return "通信与网络技术专业群";
+                            else if (res.pid == 2)
+                                return "软件与大数据技术专业群";
+                            else return "无法识别专业群";
+                        },
+                        width: 200,
+                        align: 'center'
+                    }, {
+                        field: 'majorname',
+                        title: '专业名称',
+                        sort: true,
+                        width: 250,
+                        align: 'center'
+                    }, {
+                        field: 'majorintroduce',
+                        title: '专业介绍',
+                        width: 80,
+                        sort: true,
+                        width: 580
+                    }, {
+                        field: 'majornumber',
+                        title: '专业人数',
+                        width: 100,
+                        align: 'center'
+                    }, {
+                        title: '操作',
+                        toolbar: '#userTbBar',
+                        align: 'left',
+                        align: 'center'
+                    }]
+                ]
+            });
+
+            /* 表格搜索 */
+            form.on('submit(userTbSearch)', function(data) {
+                insTb.reload({
+                    where: data.field,
+                    page: {
+                        curr: 1
+                    }
+                });
+                return false;
+            });
+
+            /* 表格工具条点击事件 */
+            table.on('tool(userTable)', function(obj) {
+                if (obj.event === 'edit') { // 修改
+                    showEditModel(obj.data);
+                } else if (obj.event === 'del') { // 删除
+                    doDel(obj);
+                } else if (obj.event === 'reset') { // 重置密码
+                    resetPsw(obj);
+                }
+            });
+
+            /* 表格头工具栏点击事件 */
+            table.on('toolbar(userTable)', function(obj) {
+                if (obj.event === 'add') { // 添加
+                    showEditModel();
+                } else if (obj.event === 'del') { // 删除
+                    var checkRows = table.checkStatus('userTable');
+                    if (checkRows.data.length === 0) {
+                        layer.msg('请选择要删除的数据', {
+                            icon: 2
+                        });
+                        return;
+                    }
+                    var ids = checkRows.data.map(function(d) {
+                        return d.id;
+                    });
+                    doDel({
+                        id: ids
+                    });
+                }
+            });
+
+            /* 显示表单弹窗 */
+            function showEditModel(mData) {
+                admin.open({
+                    type: 1,
+                    area: ['850px', '700px'],
+                    title: (mData ? '修改' : '添加') + '方向',
+                    content: $('#userEditDialog').html(),
+                    success: function(layero, dIndex) {
+                        // 渲染富文本编辑器
+                        tinymce.init({
+                            selector: '#majorintroduce',
+                            height: 400,
+                            branding: false,
+                            language: 'zh_CN',
+                            plugins: 'code print preview fullscreen paste searchreplace save autosave link autolink image imagetools media table codesample lists advlist hr charmap emoticons anchor directionality pagebreak quickbars nonbreaking visualblocks visualchars wordcount',
+                            toolbar: 'fullscreen preview code | undo redo | forecolor backcolor | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | formatselect fontselect fontsizeselect | link image media emoticons charmap anchor pagebreak codesample | ltr rtl',
+                            toolbar_drawer: 'sliding',
+                            images_upload_url: '',
+                            file_picker_types: 'file image media',
+                            file_picker_callback: function(callback, value, meta) {
+                                //文件分类
+                                var filetype = '.pdf, .txt, .zip, .rar, .7z, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .mp3, .mp4';
+                                //后端接收上传文件的地址
+                                var upurl = '{:url("admin/information/upload_img")}';
+                                //为不同插件指定文件类型及后端地址
+                                switch (meta.filetype) {
+                                    case 'image':
+                                        filetype = '.jpg, .jpeg, .png, .gif';
+                                        upurl = '{:url("admin/information/upload_img")}';
+                                        break;
+                                    case 'media':
+                                        filetype = '.mp3, .mp4';
+                                        upurl = '{:url("admin/information/upload_img")}';
+                                        break;
+                                    case 'file':
+                                    default:
+                                }
+                                //模拟出一个input用于添加本地文件
+                                var input = document.createElement('input');
+                                input.setAttribute('type', 'file');
+                                input.setAttribute('accept', filetype);
+                                input.click();
+                                input.onchange = function() {
+                                    var file = this.files[0];
+
+                                    var xhr, formData;
+                                    console.log(file.name);
+                                    xhr = new XMLHttpRequest();
+                                    xhr.withCredentials = false;
+                                    xhr.open('POST', upurl);
+                                    xhr.onload = function() {
+                                        var json;
+                                        console.log(xhr);
+                                        if (xhr.status != 200) {
+                                            failure('HTTP Error: ' + xhr.status);
+                                            return;
+                                        }
+                                        console.log(xhr.responseText);
+                                        json = JSON.parse(xhr.responseText);
+                                        if (!json || typeof json.location != 'string') {
+                                            failure('Invalid JSON: ' + xhr.responseText);
+                                            return;
+                                        }
+                                        console.log(callback);
+                                        callback(json.location);
+                                    };
+                                    formData = new FormData();
+                                    formData.append('file', file, file.name);
+                                    xhr.send(formData);
+                                };
+                            }
+                        });
+                        if (mData)
+                            tinymce.get('majorintroduce').setContent(mData.content);
+
+
+                        // 回显表单数据
+                        form.val('userEditForm', mData);
+                        // 表单提交事件
+                        form.on('submit(userEditSubmit)', function(data) {
+                            var content = tinymce.get('majorintroduce').getContent();
+                            data.field.content = content;
+                            // console.log(data.field);
+
+                            var loadIndex = layer.load(2);
+
+                            $.post(mData ? '/admin/Page/addMajor' : '/admin/Page/addMajor', data.field, function(res) {
+                                // 实际项目这里url可以是mData?'user/update':'user/add'
+                                layer.close(loadIndex);
+                                if (res.status == 1) {
+                                    layer.close(dIndex);
+                                    layer.msg("方向添加成功!");
+                                    insTb.reload({
+                                        page: {
+                                            curr: 1
+                                        }
+                                    });
+                                } else {
+                                    layer.msg("方向添加失败!", {
+                                        icon: 2
+                                    });
+                                }
+                            }, 'json');
+                            return false;
+                        });
+                        //渲染单选框
+                        form.render('radio');
+
+                        // 回显选中角色
+                        if (mData && mData.roles) {
+                            insRoleSel.setValue(mData.roles.map(function(item) {
+                                return item.roleId;
+                            }));
+                        }
+                        // 禁止弹窗出现滚动条
+                        $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                    }
+                });
+            }
+            //执行实例
+            upload.render({
+                elem: '#import', //绑定元素
+                accept: 'file', //允许上传的文件类型
+                method: 'post',
+                url: '/admin/Exportimport/majorImportExcel', //上传接口
+
+                accept: 'file',
+                // exts: 'xls',
+                success: function(res) {
+                    if (res.code == 0) {
+                        layer.msg(res.message, {
+                            icon: 6,
+                            time: 2000
+                        });
+                    }
+                    //上传完毕回调
+                },
+                error: function() {
+                    //请求异常回调
+                    layer.msg("文件上传失败", {
+                        icon: 5,
+                        time: 2000
+                    });
+                }
+            });
+
+
+            /* 删除 */
+            function doDel(obj) {
+                layer.confirm('确定要删除' + obj.data.majorname + "用户的信息吗?", {
+                    skin: 'layui-layer-admin',
+                    shade: .1
+                }, function(i) {
+                    layer.close(i);
+                    var loadIndex = layer.load(2);
+                    $.post('/admin/Page/deleteMajor', {
+                        id: obj.data ? obj.data.id : ''
+                    }, function(res) {
+                        layer.close(loadIndex);
+                        if (res.status == 1) {
+                            layer.msg("方向删除成功!");
+                            insTb.reload({
+                                page: {
+                                    curr: 1
+                                }
+                            });
+                        } else {
+                            layer.msg("方向信息删除失败,请不要重复点击");
+                        }
+                    }, 'json');
+                });
+            }
+
+            /* 修改用户状态 */
+            form.on('switch(userTbStateCk)', function(obj) {
+                var loadIndex = layer.load(2);
+                $.get('../../json/ok.json', {
+                    userId: obj.elem.value,
+                    state: obj.elem.checked ? 0 : 1
+                }, function(res) {
+                    layer.close(loadIndex);
+                    if (res.code === 200) {
+                        layer.msg(res.msg, {
+                            icon: 1
+                        });
+                    } else {
+                        layer.msg(res.msg, {
+                            icon: 2
+                        });
+                        $(obj.elem).prop('checked', !obj.elem.checked);
+                        form.render('checkbox');
+                    }
+                }, 'json');
+            });
+
+            /* 重置密码 */
+            function resetPsw(obj) {
+                layer.confirm('确定要重置“' + obj.data.nickName + '”的登录密码吗？', {
+                    skin: 'layui-layer-admin',
+                    shade: .1
+                }, function(i) {
+                    layer.close(i);
+                    var loadIndex = layer.load(2);
+                    $.get('../../json/ok.json', {
+                        userId: obj.data.userId
+                    }, function(res) {
+                        layer.close(loadIndex);
+                        if (res.code === 200) {
+                            layer.msg(res.msg, {
+                                icon: 1
+                            });
+                        } else {
+                            layer.msg(res.msg, {
+                                icon: 2
+                            });
+                        }
+                    }, 'json');
+                });
+            }
+
+        });
+    </script>
+</body>
+
+</html>

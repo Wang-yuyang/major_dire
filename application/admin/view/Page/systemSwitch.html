@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="__INDEX__/lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="__INDEX__/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="__INDEX__/css/public.css" media="all">
+</head>
+
+<body>
+    <div style="margin: 50px 50px; ">
+        <div id="" style="font-size: 40px; display:flex; justify-content:center;padding: 40px;"><i class="fa fa-database"></i></div>
+        <div id="showbox" style="display:flex; justify-content:center;font-size: 40px"></div>
+        <div style="display:flex; justify-content:center; padding: 40px;">
+            <button id="alterbutton" class="layui-btn layui-btn-lg"></button>
+        </div>
+
+    </div>
+
+    <script src="__INDEX__/lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+    <script src="__INDEX__/lib/layui-v2.5.5/layui.all.js"></script>
+    <script>
+        $(function() {
+
+            var switchs;
+
+            function update() {
+                $.ajax({ //自动刷新查看系统状态
+                    type: 'post',
+                    url: "/admin/page/systemSwitchState",
+                    data: {
+                        statue: switchs
+                    },
+                    success: function(res) {
+                        if (res.status == '1') {
+                            $('#showbox').text(res.message);
+                            switchs = 1;
+                            $('#alterbutton').text('关闭系统');
+                        } else if (res.status == '0') {
+                            $('#showbox').text(res.message);
+                            switchs = 0;
+                            $('#alterbutton').text('开启系统');
+                        }
+                    }
+                })
+            }
+
+
+            window.onload = update();
+
+            $('#alterbutton').click(function() {
+                $.ajax({
+                    type: 'post',
+                    url: '/admin/page/systemSwitchSetup',
+                    data: {
+                        statue: switchs
+                    },
+                    success: function(res) {
+                        if (res.status == 1) {
+                            update();
+                        }
+                    }
+                })
+            });
+        });
+    </script>
+    <div id="resstudentbox">
+        <p style="color:red; font-size: 24px;margin-bottom: 20px;">此操作不可逆,请谨慎操作!!!</p>
+        <button type="button" class="layui-btn" id="resstudent">重置所有学生方向选择状态</button>
+    </div>
+    <style>
+        #resstudent {
+            text-align: center;
+            height: 50px;
+            font-size: 18px;
+        }
+        
+        #resstudentbox {
+            text-align: center;
+        }
+    </style>
+    <script>
+        var layer = layui.layer;
+        $(function() {
+            $('#resstudent').click(function() {
+                if (confirm("真的要重置所有学生选课状态吗?此状态不可逆!!!")) {
+                    $.ajax({
+                        type: 'post',
+
+                        // 等待重置学生状态接口
+                        url: '/admin/page/strdentStateResetAll',
+                        success: function(res) {
+                            if (res.status == 1) {
+                                layer.msg("重置状态成功!");
+                            } else {
+                                layer.msg("重置状态失败!")
+                            }
+                        }
+                    })
+                } else return;
+            });
+        });
+    </script>
+
+
+
+</body>
+
+</html>
