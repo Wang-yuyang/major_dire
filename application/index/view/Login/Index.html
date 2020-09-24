@@ -39,7 +39,7 @@
             <div class="layui-form login-form">
                 <form class="layui-form" action="">
                     <div class="layui-form-item logo-title">
-                        <h1>在线选专业管理系统</h1>
+                        <h1>在线选专业选择系统</h1>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-icon layui-icon-username" for="username"></label>
@@ -61,7 +61,7 @@
                     </div> -->
                     </div>
                     <div class="layui-form-item">
-                        <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="login">登 入</button>
+                        <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="login">登 录</button>
                     </div>
                 </form>
             </div>
@@ -100,9 +100,9 @@
                 type: 'POST',
                 success(res) {
                     if (res.status == 1) {
-                        layer.msg('登录成功', function() {
+                        // layer.msg('登录成功', function() {
                             window.location = '/index/index/index';
-                        });
+                        // });
                     } else {
                         layer.msg(res.message);
                         return false;

@@ -93,15 +93,14 @@ class Exportimport extends Base
                 ->setCellValue("G" . $i, $data['createtime']);
             $i++;
         }
-
-        ob_end_clean();
-        \ob_start();
+		ob_end_clean();
+		\ob_start();
         $PHPWriter = \PHPExcel_IOFactory::createWriter($PHPExcel, "Excel2007");
         header('Content-Disposition: attachment;filename="学生专业方向填报信息表.xlsx"');
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Cache-Control: max-age=0');
+		header('Cache-Control: max-age=0');
         $PHPWriter->save("php://output"); //表示在$path路径下面生成demo.xlsx文件
-        exit;
+		exit;
     }
 //  导入专业方向信息
     public function majorImportExcel()

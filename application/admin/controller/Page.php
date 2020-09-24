@@ -63,6 +63,10 @@ class Page extends Base
     {
         return view('delDirection') ;
     }
+	public function studentInformationViewtechar()
+	{
+		return view('studentInformationViewtechar') ;
+	}
     public function backgroundHomeChart() // 后台图表页面
     {
         return view('backgroundHomeChart');

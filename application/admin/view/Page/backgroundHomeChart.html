@@ -1,320 +1,388 @@
 <!DOCTYPE html>
 <html>
+	<head>
+		<title>首页</title>
+		<script src="__INDEX__/lib/echarts.js" type="text/javascript" charset="utf-8"></script>
+		<script src="__INDEX__/lib/layui-v2.5.5/layui.all.js"></script>
 
-<!-- 
+	</head>
 
-	后台管理登录的首页
-	目前功能:
-	显示已选/未选方向比例
-    
-    柱状统计图显示当前各个方向人数 
-    接收数据:
-        majorlist
+	<body>
+		<div style="display:flex;justify-content:center;align-items:center;">
+			<div class="layui-card-body" style="height: 300px;width: 300px;float: left;">
+				<div id="ChoiceOfDirction" style="height: 330px;"></div>
+				<div style="color: #1AB4E8;font-size: 18px;position: absolute;bottom: 95px;left: 0;right:0;text-align: center;cursor: pointer;">
+				</div>
+			</div>
+			<!-- 所有方向人数  -->
+			<div class="layui-card-body" style="height: 300px;width: 300px;float: left;">
+				<div id="NumberOfPeople1" style="height: 330px;"></div>
+				<div style="color: #1AB4E8;font-size: 18px;position: absolute;bottom: 95px;left: 0;right:0;text-align: center;cursor: pointer;">
+				</div>
+			</div>
+			<div class="layui-card-body" style="height: 300px;width: 300px;float: left;">
+				<div id="NumberOfPeople2" style="height: 330px;"></div>
+				<div style="color: #1AB4E8;font-size: 18px;position: absolute;bottom: 95px;left: 0;right:0;text-align: center;cursor: pointer;">
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var $ = layui.jquery;
 
-    计算机类有多少人选了
-    多少人没选
-    通信类有多少人选了 
-    多少人没选
+			var onmajor = 1;
+			var nomajor = 1;
+			$(function() {
+				$.ajax({
+					// 等待功能url
+					url: "/admin/page/count",
+					type: "POST",
+					// dataType: "json",
+					// timeout: 3000,
+					success: function(res) {
+						onmajor = Number(res.onmajor);
+						nomajor = Number(res.nomajor);
+						DisplayDirectionScale1();
+						// window.location.reload();
+					}
+				});
+			});
 
-    
-    获取(已经实现):   已选方向 onmajor    未选方向 nomajor
-
- -->
-
-<head>
-    <title>首页</title>
-    <!-- CDN已解决,图表插件放入根目录 -->
-    <script src="__INDEX__/lib/echarts.js" type="text/javascript" charset="utf-8"></script>
-    <script src="__INDEX__/lib/layui-v2.5.5/layui.all.js"></script>
-
-</head>
-
-<body>
-    <!--
-			显示详细数据表格
-			1:尚未提交选择的学生人数
-			2:各个方向学生人数	比例(饼图)
-		-->
-
-    <!-- 学生选课与未选课比例表-->
-    <!-- 已完成 -->
-
-    <div id="ChoiceOfDirction" style="width: 500px;height: 500px;margin: 0px;float: left;margin-left: 90px;margin-top: 70px;"></div>
-    <script type="text/javascript">
-        var $ = layui.jquery;
-        /*
-         *利用ajax从后台获取数据
-         * 	已选方向变量 			onmajor
-         *	未选方向变量			nomajor
-         * */
-        //以下为ajax部分
-        var onmajor = 1;
-        var nomajor = 1;
-        $(function() {
-            $.ajax({
-                // 等待功能url
-                url: "/admin/page/count",
-                type: "POST",
-                // dataType: "json",
-                // timeout: 3000,
-                success: function(res) {
-                    onmajor = Number(res.onmajor);
-                    nomajor = Number(res.nomajor);
-                    DisplayDirectionScale1();
-                    // window.location.reload();
-                }
-            });
-        });
-
-        function DisplayDirectionScale1() {
-            // 基于准备好的dom，初始化echarts实例
-            let myChart = echarts.init(document.getElementById('ChoiceOfDirction'));
-            // 指定图表的配置项和数据
-            var option = {
-                title: {
-                    text: '是否选择方向比例图',
-                    left: 'center'
-                },
-                tooltip: {
-                    trigger: 'item',
-                    formatter: '{a} <br/>{b} :&nbsp; {c}&nbsp;&nbsp; ({d}%)'
-                },
-                legend: {
-                    orient: 'vertical',
-                    left: 'left',
-                    data: ['已选方向', '未选方向']
-                },
-                series: [{
-                    name: '当前数据:',
-                    type: 'pie',
-                    radius: '55%',
-                    data: [{
-                        value: onmajor,
-                        name: '已选方向'
-                    }, {
-                        value: nomajor,
-                        name: '尚未选择'
-                    }],
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
-                        }
-                    }
-                }]
-            };
-            // 使用刚指定的配置项和数据显示图表。
-            myChart.setOption(option);
-        }
-    </script>
-
-
-    <!-- 所有方向人数  -->
-    <div id="NumberOfPeople" style="width: 500px;height: 500px;float: left;margin: 0px;margin-left:50px;"></div>
-    <script type="text/javascript">
-        // 返回的参数值
-        //计算机已经选择: computerY
-        //计算机未选择:   computerN
-        //通信已经选择:   communicationY
-        //通信未选择:     communicationN
-
-        //以下为ajax部分
-
-
-        var communicationnodirection = 1;
-        var communicationondirection = 1;
-        var computernodirection = 1;
-        var computerondirection = 1;
-
-
-        $(function() {
-            $.ajax({
-                // 接收方向名和方向人数
-                url: "/admin/page/countChoice",
-                type: "POST",
-                // dataType: "json",
-                timeout: 3000,
-                success: function(res) {
-                    communicationnodirection = res.result['communicationN'];
-                    communicationondirection = res.result['communicationY'];
-                    computernodirection = res.result['computerN'];
-                    computerondirection = res.result['computerY'];
-                    DisplayDirectionScale2();
-                }
-            });
-        });
-
-        function DisplayDirectionScale2() {
-            // 基于准备好的dom，初始化echarts实例
-            let myChart = echarts.init(document.getElementById('NumberOfPeople'));
-            // 指定图表的配置项和数据
-            option = {
-                    xAxis: {
-                        type: 'category',
-                        data: ['通信已选', '通信未选', '计算机已选', '计算机未选']
-                    },
-                    tooltip: {
-                        trigger: 'axis',
-                        formatter: function(params) {
-                            return params[0].name + ":<br>" + params[0].value + "人.";
-                        }
-                    },
-                    yAxis: {
-                        type: 'value'
-                    },
-                    series: [{
-                        data: [communicationondirection, communicationnodirection, computerondirection, computernodirection],
-                        type: 'bar',
-
-                        itemStyle: {
-                            //通常情况下：
-                            normal: {　　　　　　　　　　　　
-                                //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                                color: function(params) {
-                                    var colorList = [
-                                        '#C1232B', '#B5C334', '#FCCE10', '#E87C25', '#27727B',
-                                        '#FE8463', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD',
-                                        '#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0'
-                                    ];
-                                    return colorList[params.dataIndex];
-                                },
-                                label: {
-                                    show: true,
-                                    position: 'top',
-                                    textStyle: {
-                                        color: 'black',
-                                        fontsize: 24
-                                    }
-                                }
-                            }
-                        }
-                    }]
-                }
-                // 使用刚指定的配置项和数据显示图表。
-            myChart.setOption(option);
-
-        };
-        // myChart.setOption(option);
-    </script>
+			function DisplayDirectionScale1() {
+				// 渲染日签到图表
+				var myCharts1 = echarts.init(document.getElementById('ChoiceOfDirction'));
+				var options1 = {
+					title: {
+						x: 'center',
+						y: '32%',
+						text: '全部专业方向选择情况',
+						textStyle: {
+							fontSize: 18,
+							color: '#262626',
+							fontWeight: 'normal'
+						},
+						subtextStyle: {
+							fontSize: 56,
+							color: '#28a6d6'
+						},
+						itemGap: 20
+					},
+					color: ['#18B4E7', '#E0E0E0'],
+					tooltip: {
+						trigger: 'item'
+					},
+					legend: {
+						orient: 'vertical',
+						right: '0px',
+						top: '0px',
+						data: ['已选择', '未选择'],
+						textStyle: {
+							color: '#595959'
+						}
+					},
+					series: [{
+						name: '人数',
+						type: 'pie',
+						radius: ['75%', '80%'],
+						label: {
+							normal: {
+								show: false
+							}
+						}
+					}]
+				};
+				myCharts1.setOption(options1);
+				// 赋值
+				myCharts1.setOption({
+					title: {
+						subtext: onmajor + "/" + (nomajor + onmajor)
+					},
+					series: [{
+						data: [{
+							name: '已选择',
+							value: onmajor
+						}, {
+							name: '未选择',
+							value: nomajor
+						}]
+					}]
+				});
+			}
+		</script>
 
 
 
-
-    <!-- 两个专业选课与未选课比例表 -->
-    <div id="selectall" style="width:100%;height:500px;float: left;margin-top: 60px;"></div>
-    <script type="text/javascript">
-        //   获取json变量并处理
-        var studentall = [];
-        var directionname = [];
-        var directionvalue = [];
-
-        function DataProcessing() {
-            // 处理studentall数据
-            // console.log(studentall.majorname);
-            // for (var i = 0; i < studentall.majorname.lengh; i++) {
-            //     console.log(a);
-            //     directionname.push(studentall.majorname[i]);
-
-            // }
-            for (var i in studentall) {
-                directionvalue.push(studentall[i].majornum);
-            }
-            for (var i in studentall) {
-                // 截取前四
-                directionname.push(studentall[i].majorname.substring(0, 4));
-            }
-
-            return true;
-        }
+		<script type="text/javascript">
+			var communicationnodirection = 1;
+			var communicationondirection = 1;
+			var computernodirection = 1;
+			var computerondirection = 1;
 
 
+			$(function() {
+				$.ajax({
+					// 接收方向名和方向人数
+					url: "/admin/page/countChoice",
+					type: "POST",
+					// dataType: "json",
+					timeout: 3000,
+					success: function(res) {
+						communicationnodirection = res.result['communicationN'];
+						communicationondirection = res.result['communicationY'];
+						computernodirection = res.result['computerN'];
+						computerondirection = res.result['computerY'];
+						DisplayDirectionScalea2();
+						DisplayDirectionScalea3();
+					}
+				});
+			});
 
-        $(function() {
-            $.ajax({
-                // 接收方向名和方向人数
-                url: "/admin/page/majorNameCountNum",
-                type: "POST",
-                // dataType: "json",
-                timeout: 3000,
-                success: function(res) {
-                    studentall = res.result;
-                    // console.log(studentall[1].majorname);//救命的一句
-                    // 处理接收的json数据
-                    DataProcessing();
-                    // 显示表格
-                    DisplayAll();
-                }
-            });
-        });
+			function DisplayDirectionScalea2() {
+				// 渲染日签到图表
+				var myCharts = echarts.init(document.getElementById('NumberOfPeople2'));
+				var options = {
+					title: {
+						x: 'center',
+						y: '32%',
+						text: '通信专业方向选择情况',
+						textStyle: {
+							fontSize: 18,
+							color: '#262626',
+							fontWeight: 'computerN'
+						},
+						subtextStyle: {
+							fontSize: 56,
+							color: '#28a6d6'
+						},
+						itemGap: 20
+					},
+					color: ['#18B4E7', '#E0E0E0'],
+					tooltip: {
+						trigger: 'item'
+					},
+					legend: {
+						orient: 'vertical',
+						right: '0px',
+						top: '0px',
+						data: ['通信已选择', '通信未选择'],
+						textStyle: {
+							color: '#595959'
+						}
+					},
+					series: [{
+						name: '人数',
+						type: 'pie',
+						radius: ['75%', '80%'],
+						label: {
+							normal: {
+								show: false
+							}
+						}
+					}]
+				};
+				myCharts.setOption(options);
+				// 赋值
+				myCharts.setOption({
+					title: {
+						subtext: communicationondirection + "/" + (communicationnodirection + communicationondirection)
+					},
+					series: [{
+						data: [{
+							name: '通信已选择',
+							value: communicationondirection
+						}, {
+							name: '通信未选择',
+							value: communicationnodirection
+						}]
+					}]
+				});
+			}
 
-        function DisplayAll() {
-            // 基于准备好的dom，初始化echarts实例
-            let myChart = echarts.init(document.getElementById('selectall'));
-            // 指定图表的配置项和数据
-            option = {
-                xAxis: {
-                    type: 'category',
-                    data: directionname,
-                    fontsize: 0,
-                     axisLabel: {            
-                        formatter: function(value, index) {            
-                            var val = "";            
-                            for (var i = 0; i < value.length; i++) {            
-                                if (i == 0) {            
-                                    val = value.substring(0, 1) + "\n";            
-                                } else {                
-                                    val = val + value.substring(i, i + 1) + "\n";            
-                                }       
-                            }         
-                            return val;   
-                        }
-                    }
-                },
-                yAxis: {
-                    type: 'value'
-                },
-                series: [{
-                    data: directionvalue,
-                    type: 'bar',
-                    itemStyle: {
-                        //通常情况下：
-                        normal: {　　　　　　　　　　　　
-                            //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                            color: function(params) {
-                                var colorList = [
-                                    '#C1232B', '#B5C334', '#FCCE10', '#E87C25', '#27727B',
-                                    '#FE8463', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD',
-                                    '#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0'
-                                ];
-                                return colorList[params.dataIndex];
-                            },
-                            label: {
-                                show: true,
-                                position: 'top',
-                                textStyle: {
-                                    color: 'black',
-                                    fontsize: 24
-                                }
-                            }
-                        }
-                    }
-                }],
-                tooltip: {
-                    trigger: 'axis',
-                    formatter: function(params) {
-                        return params[0].name + ":<br>" + params[0].value + "人.";
-                    }
-                }
-            };
-
-            // 使用刚指定的配置项和数据显示图表。
-            myChart.setOption(option);
-        }
-    </script>
+			function DisplayDirectionScalea3() {
+				// 渲染日签到图表
+				var myCharts = echarts.init(document.getElementById('NumberOfPeople1'));
+				var options = {
+					title: {
+						x: 'center',
+						y: '32%',
+						text: '计算机专业方向选择情况',
+						textStyle: {
+							fontSize: 18,
+							color: '#262626',
+							fontWeight: 'computerN'
+						},
+						subtextStyle: {
+							fontSize: 56,
+							color: '#28a6d6'
+						},
+						itemGap: 20
+					},
+					color: ['#18B4E7', '#E0E0E0'],
+					tooltip: {
+						trigger: 'item'
+					},
+					legend: {
+						orient: 'vertical',
+						right: '0px',
+						top: '0px',
+						data: ['计算机已选择', '计算机未选择'],
+						textStyle: {
+							color: '#595959'
+						}
+					},
+					series: [{
+						name: '人数',
+						type: 'pie',
+						radius: ['75%', '80%'],
+						label: {
+							normal: {
+								show: false
+							}
+						}
+					}]
+				};
+				myCharts.setOption(options);
+				// 赋值
+				myCharts.setOption({
+					title: {
+						subtext: computerondirection + "/" + (computernodirection + computerondirection)
+					},
+					series: [{
+						data: [{
+							name: '计算机已选择',
+							value: computerondirection
+						}, {
+							name: '计算机未选择',
+							value: computernodirection
+						}]
+					}]
+				});
+			}
+		</script>
 
 
 
-</body>
+
+		<!-- 两个专业选课与未选课比例表 -->
+		<div id="selectall" style="width:100%;height:550px;float: left;padding-bottom:15px ; margin-bottom:0px;"></div>
+		<script type="text/javascript">
+			//   获取json变量并处理
+			var studentall = [];
+			var directionname = [];
+			var directionvalue = [];
+
+			function DataProcessing() {
+
+				for (var i in studentall) {
+					directionvalue.push(studentall[i].majornum);
+				}
+				for (var i in studentall) {
+					// 截取前四
+					directionname.push(studentall[i].majorname.substring(0, 9));
+				}
+
+				return true;
+			}
+
+
+
+			$(function() {
+				$.ajax({
+					// 接收方向名和方向人数
+					url: "/admin/page/majorNameCountNum",
+					type: "POST",
+					// dataType: "json",
+					timeout: 3000,
+					success: function(res) {
+						studentall = res.result;
+						DataProcessing();
+						DisplayAll();
+					}
+				});
+			});
+
+			function DisplayAll() {
+				// 基于准备好的dom，初始化echarts实例
+				let myChart = echarts.init(document.getElementById('selectall'));
+				// 指定图表的配置项和数据
+				option = {
+					xAxis: {
+						type: 'category',
+						data: directionname,
+						fontsize: 0,
+
+						axisLabel: {
+
+							formatter: function(value) {
+								var ret = ""; //拼接加\n返回的类目项
+								var maxLength = 4; //每项显示文字个数
+								var valLength = value.length; //X轴类目项的文字个数
+								var rowN = Math.ceil(valLength / maxLength); //类目项需要换行的行数
+								if (rowN > 1) //如果类目项的文字大于3,
+								{
+									for (var i = 0; i < rowN; i++) {
+										var temp = ""; //每次截取的字符串
+										var start = i * maxLength; //开始截取的位置
+										var end = start + maxLength; //结束截取的位置
+										//这里也可以加一个是否是最后一行的判断，但是不加也没有影响，那就不加吧
+										temp = value.substring(start, end) + "\n";
+										ret += temp; //凭借最终的字符串
+									}
+									return ret;
+								} else {
+									return value;
+								}
+
+							}
+						}
+					},
+					yAxis: {
+						type: 'value',
+						min: 0,
+						max: 200,
+						interval: 40,
+					},
+					series: [{
+						data: directionvalue,
+						type: 'bar',
+						area: ["550px"],
+						itemStyle: {
+							//通常情况下：
+							normal: {
+								//每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+								color: function(params) {
+									var colorList = [
+										'#C1232B', '#B5C334', '#FCCE10', '#E87C25', '#27727B',
+										'#FE8463', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD',
+										'#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0'
+									];
+									return colorList[params.dataIndex];
+								},
+								label: {
+									show: true,
+									position: 'top',
+									textStyle: {
+										color: 'black',
+										fontsize: 24
+									}
+								}
+							}
+						}
+					}],
+					tooltip: {
+						trigger: 'axis',
+						formatter: function(params) {
+							return params[0].name + ":<br>" + params[0].value + "人.";
+						}
+					}
+				};
+
+				// 使用刚指定的配置项和数据显示图表。
+				myChart.setOption(option);
+			}
+		</script>
+
+
+
+	</body>
 
 </html>

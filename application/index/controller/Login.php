@@ -60,7 +60,6 @@ class Login extends Controller
         session('request_count' , '0') ;
 
      	if( !empty($res) ){
-//     	    $this->redirect('/index/index/index') ;
             return show("1",config("stataus.success"),"登录成功<br>请稍等,正在进入系统...");
      	}
          return  show(config("stataus.error"),"登录失败.");

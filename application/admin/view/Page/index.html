@@ -15,9 +15,6 @@
 <div class="layui-fluid">
     <div class="layui-card">
         <div class="layui-card-body">
-            <!-- 表格工具栏 -->
-
-            <!-- 数据表格 -->
             <table id="authoritiesTable" lay-filter="authoritiesTable"></table>
         </div>
     </div>
@@ -43,9 +40,6 @@
                         </div>
                     </div>
                 </div>
-
-
-
             </div>
             <div class=" layui-form-item layui-row">
                 <div class="layui-inline layui-col-xs5">
@@ -56,8 +50,6 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
             <div class=" layui-form-item layui-row">
                 <label class="layui-form-label">文章正文</label>
@@ -65,9 +57,7 @@
                     <textarea id="demoEditor" name="content"></textarea>
                 </div>
             </div>
-
         </div>
-
         <div class="layui-form-item text-right">
             <button class="layui-btn" lay-filter="authoritiesEditSubmit" lay-submit>保存</button>
             <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
@@ -187,7 +177,6 @@
             ],
             done: function(data) {
                 tbDataList = data;
-                //					console.log(data);
             }
         });
         /* 表格工具条点击事件 */

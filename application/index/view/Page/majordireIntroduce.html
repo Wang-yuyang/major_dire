@@ -16,22 +16,36 @@
             background-color: #c1e6f0;
             font-size: 15px;
         }
+		.tests > p {
+			line-height: 45px;
+			font-size: 20px;
+			font-family: "微软雅黑";
+		}
+		.tests > p > strong {
+			font-size: 21px;
+			font-family: "黑体";
+		}
+		.layui-tab-item{
+			line-height:40px;
+			font-size: 22px;
+		}
     </style>
 </head>
 
-<body>
-    <div class="layui-tab">
-        <ul class="layui-tab-title">
-            {volist name="$majordire" id="dire" offset = '0'}
-            <li class="bs">{$dire.majorname}</li>
-            {/volist}
-        </ul>
-        <div class="layui-tab-content">
-            {volist name="$majordire" id="introd"}
-            <div class="layui-tab-item">{$introd.majorintroduce}</div>
-            {/volist}
-        </div>
-    </div>
+
+				<div class="layui-tab">
+				    <ul class="layui-tab-title">
+				        {volist name="$majordire" id="dire" offset = '0'}
+				        <li class="bs">{$dire.majorname}</li>
+				        {/volist}
+				    </ul>
+				    <div class="layui-tab-content">
+				        {volist name="$majordire" id="introd"}
+				        <div class="layui-tab-item">{$introd.majorintroduce}</div>
+				        {/volist}
+				    </div>
+				</div>
+
 </body>
 <script type="text/javascript">
     // 监控页面，给第一个选项卡安排上被选中的效果

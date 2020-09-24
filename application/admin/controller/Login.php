@@ -5,10 +5,7 @@
  * Date: 2020/6/8
  * Time: 2:06
  */
-
 namespace app\admin\controller;
-
-
 use app\admin\model\Users;
 use think\Collection;
 use think\Request;

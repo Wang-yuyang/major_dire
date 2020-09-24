@@ -31,14 +31,14 @@
             </div>
         </div>
     </div>
-
-    <!-- 表格操作列 -->
+<!-- 
+    <!-- 表格操作列 --
     <script type="text/html" id="userTbBar">
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
         <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="reset">重置状态</a>
-    </script>
+    </script> -->
     <!-- 表单弹窗 -->
-    <script type="text/html" id="userEditDialog">
+   <!-- <script type="text/html" id="userEditDialog">
         <form id="userEditForm" lay-filter="userEditForm" class="layui-form model-form">
             <input name="userId" type="hidden" />
             <div class="layui-form-item">
@@ -92,7 +92,7 @@
             </div>
         </form>
     </script>
-
+ -->
     <!-- js部分 -->
     <script type="text/javascript" src="__INDEX__/assets/libs/layui/layui.js"></script>
     <script type="text/javascript" src="__INDEX__/assets/js/common.js?v=317"></script>
@@ -115,10 +115,8 @@
                 limit: 10,
                 limits: [10, 20, 30, 40, 50, 60, 100],
                 groups: 5,
-                toolbar: ['<p>',
-                    ' <button type="button" class="layui-btn" id="import"><i class="layui-icon">&#xe67c;</i>导入数据</button>&nbsp;&nbsp;&nbsp;&nbsp;',
+                toolbar: ['<p>',                    
                     '<button type="button" class="layui-btn" id="export"><i class="layui-icon">&#xe601;</i>导出数据</button>',
-                    '<button  lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加单条学生</button>&nbsp;',
                     '</p>'
                 ].join(''),
                 cols: [
@@ -180,101 +178,95 @@
                         field: 'majorname',
                         sort: true,
                         align: 'center'
-                    }, {
-                        title: '操作',
-                        toolbar: '#userTbBar',
-                        align: 'center',
-                        minWidth: 200,
-                        align: 'center'
                     }]
                 ]
             });
 
-            /* 表格工具条点击事件 */
-            table.on('tool(userTable)', function(obj) {
-                if (obj.event === 'del') { // 删除
-                    doDel(obj);
-                } else if (obj.event === 'reset') { // 重置密码
-                    resetPsw(obj);
-                }
-            });
-            /* 表格头工具栏点击事件 */
-            table.on('toolbar(userTable)', function(obj) {
-                if (obj.event === 'add') { // 添加
-                    showEditModel();
-                }
-            });
+            // /* 表格工具条点击事件 */
+            // table.on('tool(userTable)', function(obj) {
+            //     if (obj.event === 'del') { // 删除
+            //         doDel(obj);
+            //     } else if (obj.event === 'reset') { // 重置密码
+            //         resetPsw(obj);
+            //     }
+            // });
+            // /* 表格头工具栏点击事件 */
+            // table.on('toolbar(userTable)', function(obj) {
+            //     if (obj.event === 'add') { // 添加
+            //         showEditModel();
+            //     }
+            // });
 
 
-            /* 显示表单弹窗 */
-            function showEditModel(mData) {
-                admin.open({
-                    type: 1,
-                    area: '600px',
-                    title: (mData ? '修改' : '添加') + '学生',
-                    content: $('#userEditDialog').html(),
-                    success: function(layero, dIndex) {
-                        //渲染下拉框
-                        var insRoleSel = xmSelect.render({
-                            el: '#category',
-                            name: 'category',
-                            layVerify: 'required',
-                            layVerType: 'tips',
-                            radio: true,
-                            data: [{
-                                name: '普通统招',
-                                value: '普通统招'
-                            }, {
-                                name: '普高注册',
-                                value: '普高注册'
-                            }, {
-                                name: '对口单招',
-                                value: '对口单招'
-                            }, {
-                                name: '提前招生',
-                                value: '提前招生'
-                            }, {
-                                name: '培训生',
-                                value: '培训生'
-                            }, {
-                                name: '中职注册',
-                                value: '中职注册'
-                            }]
-                        });
+            // /* 显示表单弹窗 */
+            // function showEditModel(mData) {
+            //     admin.open({
+            //         type: 1,
+            //         area: '600px',
+            //         title: (mData ? '修改' : '添加') + '学生',
+            //         content: $('#userEditDialog').html(),
+            //         success: function(layero, dIndex) {
+            //             //渲染下拉框
+            //             var insRoleSel = xmSelect.render({
+            //                 el: '#category',
+            //                 name: 'category',
+            //                 layVerify: 'required',
+            //                 layVerType: 'tips',
+            //                 radio: true,
+            //                 data: [{
+            //                     name: '普通统招',
+            //                     value: '普通统招'
+            //                 }, {
+            //                     name: '普高注册',
+            //                     value: '普高注册'
+            //                 }, {
+            //                     name: '对口单招',
+            //                     value: '对口单招'
+            //                 }, {
+            //                     name: '提前招生',
+            //                     value: '提前招生'
+            //                 }, {
+            //                     name: '培训生',
+            //                     value: '培训生'
+            //                 }, {
+            //                     name: '中职注册',
+            //                     value: '中职注册'
+            //                 }]
+            //             });
 
-                        form.render('radio');
+            //             form.render('radio');
 
-                        // 回显表单数据
-                        form.val('userEditDialog', mData);
-                        // 表单提交事件
-                        form.on('submit(userEditSubmit)', function(data) {
-                            var loadIndex = layer.load(2);
-                            $.get(mData ? '/admin/Page/addStudent' : '/admin/Page/addStudent', data.field, function(res) {
-                                layer.close(loadIndex);
-                                if (res.status == 1) {
-                                    layer.close(dIndex);
-                                    layer.msg("学生添加成功!");
-                                    insTb.reload({
-                                        page: {
-                                            curr: 1
-                                        }
-                                    });
+            //             // 回显表单数据
+            //             form.val('userEditDialog', mData);
+            //             // 表单提交事件
+            //             form.on('submit(userEditSubmit)', function(data) {
+            //                 var loadIndex = layer.load(2);
+            //                 $.get(mData ? '/admin/Page/addStudent' : '/admin/Page/addStudent', data.field, function(res) {
+            //                     layer.close(loadIndex);
+            //                     if (res.status == 1) {
+            //                         layer.close(dIndex);
+            //                         layer.msg("学生添加成功!");
+            //                         insTb.reload({
+            //                             page: {
+            //                                 curr: 1
+            //                             }
+            //                         });
 
-                                } else if (res.status == 0) {
-                                    layer.msg("这个学生存在了,请查看学号是否正确!");
-                                } else {
-                                    layer.msg("学生添加出错!");
-                                    layer.close(dIndex);
-                                }
-                            }, 'json');
-                            return false;
-                        });
+            //                     } else if (res.status == 0) {
+            //                         layer.msg("这个学生存在了,请查看学号是否正确!");
+            //                     } else {
+            //                         layer.msg("学生添加出错!");
+            //                         layer.close(dIndex);
+            //                     }
+            //                 }, 'json');
+            //                 return false;
+            //             });
 
-                        // 弹窗不出现滚动条
-                        $(layero).children('.layui-layer-content').css('overflow', 'visible');
-                    }
-                });
-            }
+            //             // 弹窗不出现滚动条
+            //             $(layero).children('.layui-layer-content').css('overflow', 'visible');
+            //         }
+            //     });
+            // }
 
             //  实现下载 export
             $("#export").click(function() {
@@ -284,83 +276,83 @@
                 $form.submit();
             })
 
-            //执行实例
-            upload.render({
-                elem: '#import',  
-                accept: 'file',  
-                method: 'post',
-                url: '/admin/Exportimport/studentImportExcel',  
+            // //执行实例
+            // upload.render({
+            //     elem: '#import',  
+            //     accept: 'file',  
+            //     method: 'post',
+            //     url: '/admin/Exportimport/studentImportExcel',  
 
-                accept: 'file',
-                // exts: 'xls',
-                success: function(res) {
-                    if (res.code == 0) {
-                        layer.msg(res.message, {
-                            icon: 6,
-                            time: 2000
-                        });
-                    }
-                    //上传完毕回调
-                },
-                error: function() {
-                    layer.msg("文件上传失败", {
-                        icon: 5,
-                        time: 2000
-                    });
-                }
-            });
+            //     accept: 'file',
+            //     // exts: 'xls',
+            //     success: function(res) {
+            //         if (res.code == 0) {
+            //             layer.msg(res.message, {
+            //                 icon: 6,
+            //                 time: 2000
+            //             });
+            //         }
+            //         //上传完毕回调
+            //     },
+            //     error: function() {
+            //         layer.msg("文件上传失败", {
+            //             icon: 5,
+            //             time: 2000
+            //         });
+            //     }
+            // });
 
-            function doDel(obj) {
-                var sid = obj.data.student;
-                layer.confirm("要删除" + obj.data.stuname + "吗?", function() {
-                    $.ajax({
-                        type: 'POST',
-                        url: "/admin/page/deleteStudent", 
-                        data: {
-                            student: sid
-                        },
-                        success: function(res) {
-                            if (res.status == '1') {
-                                layer.msg("学生信息已删除!");
-                                insTb.reload({
-                                    page: {
-                                        curr: 1
-                                    }
-                                });
-                            } else {
-                                layer.msg("删除失败!");
-                            }
+            // function doDel(obj) {
+            //     var sid = obj.data.student;
+            //     layer.confirm("要删除" + obj.data.stuname + "吗?", function() {
+            //         $.ajax({
+            //             type: 'POST',
+            //             url: "/admin/page/deleteStudent", 
+            //             data: {
+            //                 student: sid
+            //             },
+            //             success: function(res) {
+            //                 if (res.status == '1') {
+            //                     layer.msg("学生信息已删除!");
+            //                     insTb.reload({
+            //                         page: {
+            //                             curr: 1
+            //                         }
+            //                     });
+            //                 } else {
+            //                     layer.msg("删除失败!");
+            //                 }
 
-                        }
-                    });
-                })
-            }
+            //             }
+            //         });
+            //     })
+            // }
 
-            /* 重置状态  已实现*/
-            function resetPsw(obj) {
-                var sid = obj.data.student;
-                if (obj.data.state == '') layer.msg(obj.data.stuname + "同学还没有填报!");
-                else layer.confirm("要重置" + obj.data.stuname + "方向状态吗?", function() {
-                    $.ajax({
-                        type: 'POST',
-                        // 需要PHP处理文件的入口路径
-                        url: "/admin/page/strdentStateReset", //发送请求
-                        data: {
-                            student: sid
-                        },
-                        success: function(res) {
-                            if (res.status == 1) {
-                                layer.msg("学生信息已重置!");
-                                insTb.reload({
-                                    page: {
-                                        curr: 1
-                                    }
-                                });
-                            }
-                        }
-                    });
-                })
-            }
+            // /* 重置状态  已实现*/
+            // function resetPsw(obj) {
+            //     var sid = obj.data.student;
+            //     if (obj.data.state == '') layer.msg(obj.data.stuname + "同学还没有填报!");
+            //     else layer.confirm("要重置" + obj.data.stuname + "方向状态吗?", function() {
+            //         $.ajax({
+            //             type: 'POST',
+            //             // 需要PHP处理文件的入口路径
+            //             url: "/admin/page/strdentStateReset", //发送请求
+            //             data: {
+            //                 student: sid
+            //             },
+            //             success: function(res) {
+            //                 if (res.status == 1) {
+            //                     layer.msg("学生信息已重置!");
+            //                     insTb.reload({
+            //                         page: {
+            //                             curr: 1
+            //                         }
+            //                     });
+            //                 }
+            //             }
+            //         });
+            //     })
+            // }
         });
     </script>
 </body>

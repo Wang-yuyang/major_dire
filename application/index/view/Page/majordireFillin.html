@@ -9,22 +9,26 @@
     <link rel="stylesheet" href="__INDEX__/lib/layui-v2.5.5/css/layui.css" media="all">
     <link rel="stylesheet" href="__INDEX__/css/public.css" media="all">
     <link rel="stylesheet" href="__INDEX__/js/lay-module/step-lay/step.css" media="all">
-</head>
+</head> 
 <body>
-<div class="layuimini-container">
-    <div class="layuimini-main">
-        <div class="layui-fluid">
-            <div class="layui-card">
-                <div class="layui-card-body" style="padding-top: 40px;">
+<div class="layuimini-container layui-container">
+    <!-- <div class="layuimini-main"> -->
+	<div class="layui-col-md12 center-in-center">
+	    <div class="col-xs-10 col-md-10">
+	        <div class="panel layui-bg-Gray">
+    <!--    <div class="layui-fluid">
+            <div class="layui-card"> -->
+			<div class="panel-body" style="padding-top: 40px;">
+                <!-- <div class="layui-card-body panel-body" style="padding-top: 40px;"> -->
                     <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
                         <div carousel-item>
                             <div>
+								<!--  -->
                                 <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
                                     <div class="layui-form-item">
                                         <label class="layui-form-label">学生学号:</label>
                                         <div class="layui-input-block">
                                             <div class="layui-form-mid layui-word-aux">{$Request.session.students.student}</div>
-
                                         </div>
                                     </div>
                                     <div class="layui-form-item">
@@ -61,6 +65,7 @@
                                     </div>
                                 </form>
                             </div>
+							<!-- ------------- -->
                             <div>
                                 <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
                                     <div class="layui-form-item">
@@ -110,7 +115,6 @@
                                     <div style="font-size: 24px;color: #333;font-weight: 500;margin-top: 30px;">
                                         提交成功
                                     </div>
-                                    <!-- <div style="font-size: 14px;color: #666;margin-top: 20px;"></div> -->
                                 </div>
                                 <div style="text-align: center;margin-top: 50px;">
                                     <button type="button" class="layui-btn layui-btn-primary" id='fillin' ">查看信息</button>
@@ -119,8 +123,9 @@
                             </div>
                         </div>
                     </div>
-                    <hr>
-                    <div style="color: #666;margin-top: 30px;margin-bottom: 40px;padding-left: 30px;">
+                    <!-- <hr> -->
+                    <div style="color: #666;margin-top: -90px;margin-bottom: 40px;padding-left: 30px;">
+						<hr>
                         <h3>说明：</h3><br>
                         <h4></h4>
                         <p>1、根据学校的规定所有专业方向的填报只有一次机会，请认真选择！</p>

@@ -61,6 +61,8 @@ class Page extends Base
         if (!session('students.switch')){ // 核验session中的系统开关状态
             $this->redirect('/index/page/majordireNotOpen');
         }
+		
+		requestCount(); //防止多次数据请求滥用服务器资源
 
         $fillin = new Fillin();
         $fillinChecked = $fillin->getCheckedMajor(session('students.student'));
@@ -92,7 +94,7 @@ class Page extends Base
          * 设置一个安全机制,防止长期呆在这里干扰或对数据库进行大量的请求导致数据异常
          */
 
-        requestCount(); //防止多次数据请求滥用
+        requestCount(); //防止多次数据请求滥用服务器资源
 
         $major = new Majordire();
         $majorNum = $major->getNum($majorNamescr);
